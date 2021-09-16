@@ -1,0 +1,55 @@
+.placeItem {
+  margin: 1rem 0;
+}
+
+.placeItem__content {
+  padding: 0;
+}
+
+.placeItem__info {
+  padding: 1rem;
+  text-align: center;
+}
+
+.placeItem__image {
+  width: 100%;
+  height: 12.5rem;
+  margin-right: 1.5rem;
+}
+
+.placeItem__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeItem__info h2,
+.placeItem__info h3,
+.placeItem__info p {
+  margin: 0 0 0.5rem 0;
+}
+
+.placeItem__actions {
+  padding: 1rem;
+  text-align: center;
+  border-top: 1px solid #ccc;
+}
+
+.placeItem__modal-content {
+  padding: 0;
+}
+
+.placeItem__modal-actions {
+  text-align: right;
+}
+
+.placeItem__actions button,
+.placeItem__actions a {
+  margin: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .placeItem__image {
+    height: 20rem;
+  } 
+}
