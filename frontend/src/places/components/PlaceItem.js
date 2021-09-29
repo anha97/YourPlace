@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
 import Modal from "../../shared/components/UIElements/Modal";
+import Map from "../../shared/components/UIElements/Map";
 
 import classes from "./PlaceItem.module.css";
 
@@ -25,7 +26,7 @@ const PlaceItem = (props) => {
         footer={<Button onClick={toggleMap}>CLOSE</Button>}
       >
         <div className="map-container">
-          <h2>THE MAP!</h2>
+          <Map center={props.coordinates} />
         </div>
       </Modal>
       <li className={classes.placeItem}>
@@ -39,7 +40,9 @@ const PlaceItem = (props) => {
             <p>{props.description}</p>
           </div>
           <div className={classes.placeItem__actions}>
-            <Button inverse onClick={toggleMap}>VIEW ON MAP</Button>
+            <Button inverse onClick={toggleMap}>
+              VIEW ON MAP
+            </Button>
             <Button to={`/places/${props.id}`}>EDIT</Button>
             <Button danger>DELETE</Button>
           </div>
