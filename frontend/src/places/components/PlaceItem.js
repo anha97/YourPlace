@@ -40,10 +40,13 @@ const PlaceItem = (props) => {
             <p>{props.description}</p>
           </div>
           <div className={classes.placeItem__actions}>
+            {/* Regular button */}
             <Button inverse onClick={toggleMap}>
               VIEW ON MAP
             </Button>
+            {/* Link button */}
             <Button to={`/places/${props.id}`}>EDIT</Button>
+            {/* Regular button */}
             <Button danger>DELETE</Button>
           </div>
         </Card>
