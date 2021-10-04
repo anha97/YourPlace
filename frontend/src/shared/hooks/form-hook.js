@@ -7,6 +7,9 @@ const formReducer = (state, action) => {
     case "INPUT_CHANGE":
       let formIsValid = true;
       for (const inputId in state.inputs) {
+        if (!state.inputs[inputId]){  // For Auth.js where name will be undefined so this will ignore and continue on next iteration
+          continue;
+        }
         // This will check what input that you're trying to change (title or description)
         if (inputId === action.inputId) {
           formIsValid = formIsValid && action.isValid;

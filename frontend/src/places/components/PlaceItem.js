@@ -12,11 +12,11 @@ const PlaceItem = (props) => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const toggleMap = () => {
-    setShowMap(!showMap);
+    setShowMap(prevShowMap => !prevShowMap);
   };
 
   const toggleConfirm = () => {
-    setShowConfirmModal(!showConfirmModal);
+    setShowConfirmModal(prevShowConfirm => !prevShowConfirm);
   };
 
   const confirmDeleteHandler = () => {
