@@ -9,9 +9,19 @@ import classes from "./PlaceItem.module.css";
 
 const PlaceItem = (props) => {
   const [showMap, setShowMap] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const toggleMap = () => {
     setShowMap(!showMap);
+  };
+
+  const toggleConfirm = () => {
+    setShowConfirmModal(!showConfirmModal);
+  };
+
+  const confirmDeleteHandler = () => {
+    setShowConfirmModal(false);
+    console.log('DELETING...');
   };
 
   // Modal will trigger if only showMap is true
@@ -28,6 +38,27 @@ const PlaceItem = (props) => {
         <div className="map-container">
           <Map center={props.coordinates} />
         </div>
+      </Modal>
+      <Modal
+        show={showConfirmModal}
+        onCancel={toggleConfirm}
+        header="Are you sure?"
+        footerClass="place-item__modal-actions"
+        footer={
+          <React.Fragment>
+            <Button inverse onClick={toggleConfirm}>
+              CANCEL
+            </Button>
+            <Button danger onClick={confirmDeleteHandler}>
+              DELETE
+            </Button>
+          </React.Fragment>
+        }
+      >
+        <p>
+          Do you want to proceed and delete this place? Please note that it
+          can't be undone thereafter.
+        </p>
       </Modal>
       <li className={classes.placeItem}>
         <Card className={classes.placeItem__content}>
@@ -47,7 +78,7 @@ const PlaceItem = (props) => {
             {/* Link button */}
             <Button to={`/places/${props.id}`}>EDIT</Button>
             {/* Regular button */}
-            <Button danger>DELETE</Button>
+            <Button danger onClick={toggleConfirm}>DELETE</Button>
           </div>
         </Card>
       </li>
