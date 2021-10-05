@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 
+import { authActions } from "../../store/auth-slice";
+import { useDispatch } from "react-redux";
+
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
@@ -15,6 +18,9 @@ import classes from "./Auth.module.css";
 
 const Auth = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
+
+  const dispatch = useDispatch();
+  // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -60,6 +66,16 @@ const Auth = () => {
   const authSubmit = (event) => {
     event.preventDefault();
     console.log(formState.inputs);
+    if (isLoginMode) {
+      dispatch(authActions.login());  // It will return true
+      // console.log(isLoggedIn)
+    }
+    // If you executed authActions.login(), it will go to else statement instead. I think it will be true but I'm not sure it doesn't execute if statement...
+    // if (isLoggedIn) {
+    //   console.log("It's logged in");
+    // } else {
+    //   console.log("You signed up instead");
+    // }
   };
 
   return (

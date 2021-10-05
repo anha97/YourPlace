@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
@@ -10,6 +11,8 @@ import classes from "./PlaceItem.module.css";
 const PlaceItem = (props) => {
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const userLogin = useSelector((state) => state.auth.isLoggedIn);
 
   const toggleMap = () => {
     setShowMap(prevShowMap => !prevShowMap);
@@ -76,9 +79,9 @@ const PlaceItem = (props) => {
               VIEW ON MAP
             </Button>
             {/* Link button */}
-            <Button to={`/places/${props.id}`}>EDIT</Button>
+            {userLogin && <Button to={`/places/${props.id}`}>EDIT</Button>}
             {/* Regular button */}
-            <Button danger onClick={toggleConfirm}>DELETE</Button>
+            {userLogin && <Button danger onClick={toggleConfirm}>DELETE</Button>}
           </div>
         </Card>
       </li>
