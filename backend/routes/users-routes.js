@@ -1,4 +1,22 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const router = express.Router();
 
-const app = express();
+const { check } = require("express-validator");
+
+const usersControllers = require("../controllers/users-controllers");
+
+router.get("/", usersControllers.getUsers);
+
+router.post(
+  "/signup",
+  [
+    check("name").not().isEmpty(),
+    check("email").normalizeEmail().isEmail(),
+    check("password").isLength({ min: 6 }),
+  ],
+  usersControllers.userSignup
+);
+
+router.post("/login", usersControllers.userLogin);
+
+module.exports = router;
