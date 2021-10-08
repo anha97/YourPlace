@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser"); // Allows you to read the upcoming request or body header
+const mongoose = require("mongoose");
 
 const placesRoutes = require("./routes/places-routes");
 const usersRoutes = require("./routes/users-routes");
@@ -28,4 +29,12 @@ app.use((error, req, res, next) => {
     .json({ message: error.message || "An unknown error occurred!" });
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    "mongodb+srv://andrew:nBNYIUCj85kWVozt@cluster0.bthzl.mongodb.net/places?retryWrites=true&w=majority"
+  )
+  .then(() => {
+    app.listen(5000); // If Mongoose is connected successfully, start the server
+    console.log("Server is online!");
+  })
+  .catch((err) => console.log(err));
