@@ -6,6 +6,8 @@ import { useDispatch } from "react-redux";
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -18,6 +20,8 @@ import classes from "./Auth.module.css";
 
 const Auth = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const dispatch = useDispatch();
   // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -63,63 +67,120 @@ const Auth = () => {
     setIsLoginMode((prevLoginMode) => !prevLoginMode);
   };
 
-  const authSubmit = (event) => {
+  const authSubmit = async (event) => {
     event.preventDefault();
-    console.log(formState.inputs);
+    setIsLoading(true);
+
     if (isLoginMode) {
-      dispatch(authActions.login());  // It will return true
-      // console.log(isLoggedIn)
+      try {
+        // Look at user-routes.js inside the backend folder
+        const response = await fetch("http://localhost:5000/api/users/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        const data = await response.json();
+
+        // Check if there is an error from backend side. If so, throw new Error w/ data.message (data.message is from HttpError() inside backend folder)
+        if (!response.ok) {
+          throw new Error(data.message);
+        }
+        setIsLoading(false);
+        dispatch(authActions.login()); // It will return true
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setError(err.message || "Something went wrong, please try again.");
+      }
+    } else {
+      try {
+        setError(null);
+        // Look at user-routes.js inside the backend folder
+        const response = await fetch("http://localhost:5000/api/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formState.inputs.name.value,
+            email: formState.inputs.email.value,
+            password: formState.inputs.password.value,
+          }),
+        });
+
+        const data = await response.json();
+
+        // Check if there is an error from backend side. If so, throw new Error w/ data.message (data.message is from HttpError() inside backend folder)
+        if (!response.ok) {
+          throw new Error(data.message);
+        }
+        setIsLoading(false);
+        dispatch(authActions.login()); // It will return true
+      } catch (err) {
+        console.log(err);
+        setIsLoading(false);
+        setError(err.message || "Something went wrong, please try again.");
+      }
     }
-    // If you executed authActions.login(), it will go to else statement instead. I think it will be true but I'm not sure it doesn't execute if statement...
-    // if (isLoggedIn) {
-    //   console.log("It's logged in");
-    // } else {
-    //   console.log("You signed up instead");
-    // }
+  };
+
+  const errorHandler = () => {
+    // This will reset the error after encountering one, so you need to create this for ErrorModal component (function in ErrorModal)
+    setError(null);
   };
 
   return (
-    <Card className={classes.authentication}>
-      <h2>Login Required</h2>
-      <hr />
-      <form onSubmit={authSubmit}>
-        {!isLoginMode && (
+    <React.Fragment>
+      <ErrorModal error={error} onClear={errorHandler} />
+      <Card className={classes.authentication}>
+        {isLoading && <LoadingSpinner asOverlay />}
+        <h2>Login Required</h2>
+        <hr />
+        <form onSubmit={authSubmit}>
+          {!isLoginMode && (
+            <Input
+              element="input"
+              id="name"
+              type="text"
+              label="Your Name"
+              validators={[VALIDATOR_REQUIRE()]}
+              errorText="Please enter a name."
+              onInput={inputHandler}
+            />
+          )}
           <Input
             element="input"
-            id="name"
-            type="text"
-            label="Your Name"
-            validators={[VALIDATOR_REQUIRE()]}
-            errorText="Please enter a name."
+            id="email"
+            type="email"
+            label="E-Mail"
+            validators={[VALIDATOR_EMAIL()]}
+            errorText="Please enter a valid email!"
             onInput={inputHandler}
           />
-        )}
-        <Input
-          element="input"
-          id="email"
-          type="email"
-          label="E-Mail"
-          validators={[VALIDATOR_EMAIL()]}
-          errorText="Please enter a valid email!"
-          onInput={inputHandler}
-        />
-        <Input
-          element="input"
-          id="password"
-          type="password"
-          label="Password"
-          validators={[VALIDATOR_MINLENGTH(5)]}
-          errorText="Please enter a valid password!"
-          onInput={inputHandler}
-        />
-        <Button type="submit" disabled={!formState.isValid}>
-          {isLoginMode ? "LOGIN" : "SIGNUP"}
+          <Input
+            element="input"
+            id="password"
+            type="password"
+            label="Password"
+            validators={[VALIDATOR_MINLENGTH(5)]}
+            errorText="Please enter a valid password!"
+            onInput={inputHandler}
+          />
+          <Button type="submit" disabled={!formState.isValid}>
+            {isLoginMode ? "LOGIN" : "SIGNUP"}
+          </Button>
+        </form>
+        <Button inverse onClick={switchHandler}>
+          SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
         </Button>
-      </form>
-      <Button inverse onClick={switchHandler}>
-        SWITCH TO {isLoginMode ? "SIGNUP" : "LOGIN"}
-      </Button>
-    </Card>
+      </Card>
+    </React.Fragment>
   );
 };
 
