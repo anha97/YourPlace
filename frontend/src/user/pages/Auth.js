@@ -15,13 +15,17 @@ import {
 } from "../../shared/util/validators";
 
 import { useForm } from "../../shared/hooks/form-hook";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 import classes from "./Auth.module.css";
+// import { createNextState } from "@reduxjs/toolkit";
 
 const Auth = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const [error, setError] = useState(null);
+
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const dispatch = useDispatch();
   // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -67,77 +71,52 @@ const Auth = () => {
     setIsLoginMode((prevLoginMode) => !prevLoginMode);
   };
 
+  // You don't need to do anything to the data that after fetching from mongoDB since the login/signup credential is being checked by the backend (Look at users-controller.js)
+  // If signup/login failed (from backend), you will not run authActions.login (from redux that you can check on store folder).
+  // NOTES: The error from backend is passed through the http-hook.js where you manage the useState of the error by catch blocks. Then you acquire the error from the hook to here and pass it on ErrorModal component.
   const authSubmit = async (event) => {
     event.preventDefault();
-    setIsLoading(true);
 
     if (isLoginMode) {
+      // Look at user-routes.js inside the backend folder
+      // Look at sendRequest inside http-hook.js
       try {
-        // Look at user-routes.js inside the backend folder
-        const response = await fetch("http://localhost:5000/api/users/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        await sendRequest(
+          "http://localhost:5000/api/users/login",
+          "POST",
+          JSON.stringify({
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-
-        const data = await response.json();
-
-        // Check if there is an error from backend side. If so, throw new Error w/ data.message (data.message is from HttpError() inside backend folder)
-        if (!response.ok) {
-          throw new Error(data.message);
-        }
-        setIsLoading(false);
+          {
+            "Content-Type": "application/json",
+          }
+        );
         dispatch(authActions.login()); // It will return true
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-        setError(err.message || "Something went wrong, please try again.");
-      }
+      } catch (err) {}
     } else {
       try {
-        setError(null);
         // Look at user-routes.js inside the backend folder
-        const response = await fetch("http://localhost:5000/api/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
+        await sendRequest(
+          "http://localhost:5000/api/users/signup",
+          "POST",
+          JSON.stringify({
             name: formState.inputs.name.value,
             email: formState.inputs.email.value,
             password: formState.inputs.password.value,
           }),
-        });
-
-        const data = await response.json();
-
-        // Check if there is an error from backend side. If so, throw new Error w/ data.message (data.message is from HttpError() inside backend folder)
-        if (!response.ok) {
-          throw new Error(data.message);
-        }
-        setIsLoading(false);
+          {
+            "Content-Type": "application/json",
+          }
+        );
         dispatch(authActions.login()); // It will return true
-      } catch (err) {
-        console.log(err);
-        setIsLoading(false);
-        setError(err.message || "Something went wrong, please try again.");
-      }
+      } catch (err) {}
     }
-  };
-
-  const errorHandler = () => {
-    // This will reset the error after encountering one, so you need to create this for ErrorModal component (function in ErrorModal)
-    setError(null);
   };
 
   return (
     <React.Fragment>
-      <ErrorModal error={error} onClear={errorHandler} />
+      <ErrorModal error={error} onClear={clearError} />
       <Card className={classes.authentication}>
         {isLoading && <LoadingSpinner asOverlay />}
         <h2>Login Required</h2>
