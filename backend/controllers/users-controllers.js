@@ -6,9 +6,11 @@ const User = require("../models/user.js");
 const getUsers = async (req, res, next) => {
   let users;
   try {
-    users = await User.find({}, '-password'); // Takes all values but password
+    users = await User.find({}, "-password"); // Takes all values but password
   } catch (err) {
-    return next(new HttpError("Fetching users failed, please try again later.", 500));
+    return next(
+      new HttpError("Fetching users failed, please try again later.", 500)
+    );
   }
 
   res.status(200).json({
@@ -81,7 +83,7 @@ const userLogin = async (req, res, next) => {
     return next(new HttpError("Invalid credentials, please try again.", 401));
   }
 
-  res.json({ message: "Logged in!" });
+  res.json({ message: "Logged in!", user: user.toObject({ getters: true }) });
 };
 
 exports.getUsers = getUsers;
