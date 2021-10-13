@@ -54,8 +54,7 @@ const userSignup = async (req, res, next) => {
     name: name,
     email: email,
     password: password,
-    image:
-      "https://images.unsplash.com/photo-1632877558001-92e30f4a6b65?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80",
+    image: req.file.path,
     places: [],
   });
 

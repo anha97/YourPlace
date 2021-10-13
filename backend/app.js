@@ -1,3 +1,6 @@
+const fs = require("fs");
+const path = require("path");
+
 const express = require("express");
 const bodyParser = require("body-parser"); // Allows you to read the upcoming request or body header
 const mongoose = require("mongoose");
@@ -9,6 +12,9 @@ const HttpError = require("./models/http-error");
 const app = express();
 
 app.use(bodyParser.json());
+
+// You need this to display images from backend to frontend
+app.use("/uploads/images", express.static(path.join("uploads", "images")));
 
 // This is necessary for connection between frontend and backend
 app.use((req, res, next) => {
@@ -32,6 +38,14 @@ app.use((req, res, next) => {
 
 // Will execute it for every requests (A special middleware that handles errors when throw or return next(err) in a specific route)
 app.use((error, req, res, next) => {
+  // If we got an error and has an image file, delete that image file
+  if (req.file) {
+    // req.file is from multer I think
+    fs.unlink(req.file.path, (err) => {
+      // This function will trigger after deletion
+      console.log(err);
+    });
+  }
   if (res.headerSent) {
     return next(error);
   }
