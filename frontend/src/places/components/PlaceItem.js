@@ -5,31 +5,43 @@ import Card from "../../shared/components/UIElements/Card";
 import Button from "../../shared/components/FormElements/Button";
 import Modal from "../../shared/components/UIElements/Modal";
 import Map from "../../shared/components/UIElements/Map";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 import classes from "./PlaceItem.module.css";
 
 const PlaceItem = (props) => {
   const [showMap, setShowMap] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
-  const userLogin = useSelector((state) => state.auth.isLoggedIn);
+  const uid = useSelector((state) => state.auth.userId);
 
   const toggleMap = () => {
-    setShowMap(prevShowMap => !prevShowMap);
+    setShowMap((prevShowMap) => !prevShowMap);
   };
 
   const toggleConfirm = () => {
-    setShowConfirmModal(prevShowConfirm => !prevShowConfirm);
+    setShowConfirmModal((prevShowConfirm) => !prevShowConfirm);
   };
 
-  const confirmDeleteHandler = () => {
+  const confirmDeleteHandler = async () => {
     setShowConfirmModal(false);
-    console.log('DELETING...');
+    try {
+      await sendRequest(
+        `http://localhost:5000/api/places/${props.id}`,
+        "DELETE"
+      );
+      props.onDelete(props.id);
+    } catch (err) {}
   };
 
   // Modal will trigger if only showMap is true
   return (
     <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
       <Modal
         show={showMap}
         onCancel={toggleMap}
@@ -65,6 +77,7 @@ const PlaceItem = (props) => {
       </Modal>
       <li className={classes.placeItem}>
         <Card className={classes.placeItem__content}>
+          {isLoading && <LoadingSpinner asOverlay />}
           <div className={classes.placeItem__image}>
             <img src={props.image} alt={props.title} />
           </div>
@@ -79,9 +92,15 @@ const PlaceItem = (props) => {
               VIEW ON MAP
             </Button>
             {/* Link button */}
-            {userLogin && <Button to={`/places/${props.id}`}>EDIT</Button>}
+            {uid === props.creatorId && (
+              <Button to={`/places/${props.id}`}>EDIT</Button>
+            )}
             {/* Regular button */}
-            {userLogin && <Button danger onClick={toggleConfirm}>DELETE</Button>}
+            {uid === props.creatorId && (
+              <Button danger onClick={toggleConfirm}>
+                DELETE
+              </Button>
+            )}
           </div>
         </Card>
       </li>

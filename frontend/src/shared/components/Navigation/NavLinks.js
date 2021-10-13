@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { authActions } from "../../../store/auth-slice";
@@ -9,9 +9,12 @@ import "./NavLinks.css";
 const NavLinks = (props) => {
   const dispatch = useDispatch();
   const userLogin = useSelector((state) => state.auth.isLoggedIn);
+  const uid = useSelector((state) => state.auth.userId);
+  const history = useHistory();
 
   const logoutHandler = () => {
     dispatch(authActions.logout());
+    history.push('/');
   };
 
   return (
@@ -23,7 +26,7 @@ const NavLinks = (props) => {
       </li>
       {userLogin && (
         <li>
-          <NavLink to="/u1/places">MY PLACES</NavLink>
+          <NavLink to={`/${uid}/places`}>MY PLACES</NavLink>
         </li>
       )}
       {userLogin && (
