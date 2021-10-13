@@ -37,6 +37,7 @@ function App() {
       </Switch>
     );
   } else {
+    // If you were to add a new place while not logging in. It will redirect you to /auth page instead
     routes = (
       <Switch>
         <Route path="/" exact>

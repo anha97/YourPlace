@@ -8,6 +8,7 @@ import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_EMAIL,
   VALIDATOR_MINLENGTH,
@@ -52,6 +53,7 @@ const Auth = () => {
         {
           ...formState.inputs,
           name: undefined,
+          image: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -64,6 +66,10 @@ const Auth = () => {
             value: "",
             isValid: false,
           },
+          image: {
+            value: null,
+            isValid: false,
+          }
         },
         false
       );
@@ -71,12 +77,13 @@ const Auth = () => {
     setIsLoginMode((prevLoginMode) => !prevLoginMode);
   };
 
-  // You don't need to do anything to the data that after fetching from mongoDB since the login/signup credential is being checked by the backend (Look at users-controller.js), but you might want to 
+  // You don't need to do anything to the data that after fetching from mongoDB since the login/signup credential is being checked by the backend (Look at users-controller.js), but you might want to
   // get the id from the data since you need it to add it into redux to manage the user's status...
   // If signup/login failed (from backend), you will not run authActions.login (from redux that you can check on store folder).
   // NOTES: The error from backend is passed through the http-hook.js where you manage the useState of the error by catch blocks. Then you acquire the error from the hook to here and pass it on ErrorModal component.
   const authSubmit = async (event) => {
     event.preventDefault();
+    // console.log(formState.inputs);
 
     if (isLoginMode) {
       // Look at user-routes.js inside the backend folder
@@ -97,18 +104,16 @@ const Auth = () => {
       } catch (err) {}
     } else {
       try {
+        const formData = new FormData(); // New format to send data to the backend instead of using JSON (You can't send file (image) in JSON)
+        formData.append("email", formState.inputs.email.value); // Can have both text and file data
+        formData.append("name", formState.inputs.name.value);
+        formData.append("password", formState.inputs.password.value);
+        formData.append("image", formState.inputs.image.value);
         // Look at user-routes.js inside the backend folder
         const data = await sendRequest(
           "http://localhost:5000/api/users/signup",
           "POST",
-          JSON.stringify({
-            name: formState.inputs.name.value,
-            email: formState.inputs.email.value,
-            password: formState.inputs.password.value,
-          }),
-          {
-            "Content-Type": "application/json",
-          }
+          formData  // No need to add headers since formData will add that automatically
         );
         dispatch(authActions.login({ id: data.user.id })); // It will return true
       } catch (err) {}
@@ -134,6 +139,7 @@ const Auth = () => {
               onInput={inputHandler}
             />
           )}
+          {!isLoginMode && <ImageUpload center id="image" onInput={inputHandler} errorText="Please provide an image." />}
           <Input
             element="input"
             id="email"
