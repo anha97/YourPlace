@@ -19,6 +19,7 @@ import classes from "./PlaceForm.module.css";
 const NewPlace = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
   const id = useSelector((state) => state.auth.userId);
+  const token = useSelector((state) => state.auth.token);
   const [formState, inputHandler] = useForm({
     title: {
       value: "",
@@ -50,7 +51,9 @@ const NewPlace = () => {
       formData.append("address", formState.inputs.address.value);
       formData.append("creator", id);
       formData.append("image", formState.inputs.image.value);
-      await sendRequest("http://localhost:5000/api/places/", "POST", formData);
+      await sendRequest("http://localhost:5000/api/places/", "POST", formData, {
+        Authorization: "Bearer " + token,
+      });
       // Redirect the user to a different page
       history.push("/");
     } catch (err) {}

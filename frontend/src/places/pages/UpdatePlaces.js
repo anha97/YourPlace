@@ -21,6 +21,7 @@ const UpdatePlace = () => {
   const history = useHistory();
   const placeId = useParams().placeId;
   const uid = useSelector((state) => state.auth.userId);
+  const token = useSelector((state) => state.auth.token);
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -76,6 +77,7 @@ const UpdatePlace = () => {
         }),
         {
           "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
         }
       );
       history.push(`/${uid}/places`);

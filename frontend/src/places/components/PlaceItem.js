@@ -18,6 +18,7 @@ const PlaceItem = (props) => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const uid = useSelector((state) => state.auth.userId);
+  const token = useSelector((state) => state.auth.token);
 
   const toggleMap = () => {
     setShowMap((prevShowMap) => !prevShowMap);
@@ -32,7 +33,11 @@ const PlaceItem = (props) => {
     try {
       await sendRequest(
         `http://localhost:5000/api/places/${props.id}`,
-        "DELETE"
+        "DELETE",
+        null,
+        {
+          Authorization: "Bearer " + token,
+        }
       );
       props.onDelete(props.id);
     } catch (err) {}
@@ -79,7 +84,10 @@ const PlaceItem = (props) => {
         <Card className={classes.placeItem__content}>
           {isLoading && <LoadingSpinner asOverlay />}
           <div className={classes.placeItem__image}>
-            <img src={`http://localhost:5000/${props.image}`} alt={props.title} />
+            <img
+              src={`http://localhost:5000/${props.image}`}
+              alt={props.title}
+            />
           </div>
           <div className={classes.placeItem__info}>
             <h2>{props.title}</h2>

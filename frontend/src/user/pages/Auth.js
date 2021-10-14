@@ -100,7 +100,7 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        dispatch(authActions.login({ id: data.user.id })); // It will return true
+        dispatch(authActions.login({ id: data.userId, token: data.token })); // It will return true
       } catch (err) {}
     } else {
       try {
@@ -115,7 +115,7 @@ const Auth = () => {
           "POST",
           formData  // No need to add headers since formData will add that automatically
         );
-        dispatch(authActions.login({ id: data.user.id })); // It will return true
+        dispatch(authActions.login({ id: data.userId, token: data.token})); // It will return true
       } catch (err) {}
     }
   };

@@ -15,10 +15,10 @@ import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
 
 function App() {
-  const userLogin = useSelector((state) => state.auth.isLoggedIn);
+  const token = useSelector((state) => state.auth.token);
 
   let routes;
-  if (userLogin) {
+  if (token) {
     routes = (
       <Switch>
         <Route path="/" exact>
