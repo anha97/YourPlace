@@ -14,11 +14,6 @@ module.exports = (req, res, next) => {
       throw new HttpError("Authentication failed!");
     }
     const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
-    // jwt.sign(
-    //   { userId: user.id, email: user.email },
-    //   "supersecret_dont_share_with_anyone",
-    //   { expiresIn: "1h" }
-    // );
     // Since you store userId and email, you can use them to define a new variable for req to hold onto...
     req.userData = { userId: decodedToken.userId };
     next();
