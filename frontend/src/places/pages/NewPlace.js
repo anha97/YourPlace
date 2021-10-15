@@ -18,7 +18,6 @@ import classes from "./PlaceForm.module.css";
 
 const NewPlace = () => {
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
-  const id = useSelector((state) => state.auth.userId);
   const token = useSelector((state) => state.auth.token);
   const [formState, inputHandler] = useForm({
     title: {
@@ -49,7 +48,6 @@ const NewPlace = () => {
       formData.append("title", formState.inputs.title.value); // Can have both text and file data
       formData.append("description", formState.inputs.description.value);
       formData.append("address", formState.inputs.address.value);
-      formData.append("creator", id);
       formData.append("image", formState.inputs.image.value);
       await sendRequest("http://localhost:5000/api/places/", "POST", formData, {
         Authorization: "Bearer " + token,
