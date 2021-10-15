@@ -70,7 +70,7 @@ const createPlace = async (req, res, next) => {
     );
   }
 
-  const { title, description, address, creator } = req.body;
+  const { title, description, address } = req.body;
 
   // Convert a address into coordinates, using third-party API (locationIQ inside location.js)
   let coordinates;
@@ -86,12 +86,12 @@ const createPlace = async (req, res, next) => {
     address: address,
     location: coordinates,
     image: req.file.path,
-    creator: creator,
+    creator: req.userData.userId, // req.userData.userId is from check-auth.js
   });
 
   let user;
   try {
-    user = await User.findById(creator);
+    user = await User.findById(req.userData.userId);
   } catch (err) {
     const error = new HttpError("Creating place failed, please try again", 500);
     return next(error);
@@ -110,6 +110,7 @@ const createPlace = async (req, res, next) => {
     await user.save({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
+    console.log(err);
     return next(new HttpError("Creating place failed, please try again.", 500));
   }
 
@@ -142,6 +143,12 @@ const updatePlaceById = async (req, res, next) => {
   if (!place) {
     throw new HttpError("Could not find a place for the provided id.", 404);
   }
+
+  // req.userData.userId is from check-auth.js where you store the userId in the request.userData
+  // Authorization on the backend
+  if(place.creator.toString() !== req.userData.userId){
+    return next(new HttpError("You are not allowed to edit this place.", 403));
+  };
 
   place.title = title;
   place.description = description;
@@ -176,6 +183,10 @@ const deletePlace = async (req, res, next) => {
   if (!place) {
     return next(new HttpError("Could not find place for this id.", 404));
   }
+
+  if(place.creator.id !== req.userData.userId){
+    return next(new HttpError("You are not allowed to delete this place.", 403));
+  };
 
   // Cleaning up the images after deletion
   const imagePath = place.image;
