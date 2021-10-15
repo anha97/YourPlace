@@ -13,10 +13,7 @@ module.exports = (req, res, next) => {
     if (!token) {
       throw new HttpError("Authentication failed!");
     }
-    const decodedToken = jwt.verify(
-      token,
-      "supersecret_dont_share_with_anyone"
-    );
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
     // jwt.sign(
     //   { userId: user.id, email: user.email },
     //   "supersecret_dont_share_with_anyone",
