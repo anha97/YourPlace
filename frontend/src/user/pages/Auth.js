@@ -19,17 +19,12 @@ import { useForm } from "../../shared/hooks/form-hook";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 
 import classes from "./Auth.module.css";
-// import { createNextState } from "@reduxjs/toolkit";
 
 const Auth = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [error, setError] = useState(null);
-
   const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const dispatch = useDispatch();
-  // const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
 
   const [formState, inputHandler, setFormData] = useForm(
     {
@@ -83,11 +78,10 @@ const Auth = () => {
   // NOTES: The error from backend is passed through the http-hook.js where you manage the useState of the error by catch blocks. Then you acquire the error from the hook to here and pass it on ErrorModal component.
   const authSubmit = async (event) => {
     event.preventDefault();
-    // console.log(formState.inputs);
 
     if (isLoginMode) {
       // Look at user-routes.js inside the backend folder
-      // Look at sendRequest inside http-hook.js
+      // Look at sendRequest inside http-hook.js...
       try {
         const data = await sendRequest(
           `${process.env.REACT_APP_BACKEND_URL}/users/login`,
@@ -100,17 +94,6 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
-        // const data = await sendRequest(
-        //   "http://localhost:5000/api/users/login",
-        //   "POST",
-        //   JSON.stringify({
-        //     email: formState.inputs.email.value,
-        //     password: formState.inputs.password.value,
-        //   }),
-        //   {
-        //     "Content-Type": "application/json",
-        //   }
-        // );
         dispatch(authActions.login({ id: data.userId, token: data.token })); // It will return true
       } catch (err) {}
     } else {
@@ -126,11 +109,6 @@ const Auth = () => {
           "POST",
           formData  // No need to add headers since formData will add that automatically
         );
-        // const data = await sendRequest(
-        //   "http://localhost:5000/api/users/signup",
-        //   "POST",
-        //   formData  // No need to add headers since formData will add that automatically
-        // );
         dispatch(authActions.login({ id: data.userId, token: data.token})); // It will return true
       } catch (err) {}
     }

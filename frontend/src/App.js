@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -9,14 +9,16 @@ import {
 import { useSelector, useDispatch } from "react-redux";
 import { authActions } from "./store/auth-slice";
 
-import NewPlace from "./places/pages/NewPlace";
-import Users from "./user/pages/Users";
-import UserPlaces from "./places/pages/UserPlaces";
-import UpdatePlace from "./places/pages/UpdatePlaces";
-import Auth from "./user/pages/Auth";
 import MainNavigation from "./shared/components/Navigation/MainNavigation";
+import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 
 let logoutTimer;
+
+const NewPlace = React.lazy(() => import("./places/pages/NewPlace"));
+const Users = React.lazy(() => import("./user/pages/Users"));
+const UserPlaces = React.lazy(() => import("./places/pages/UserPlaces"));
+const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlaces"));
+const Auth = React.lazy(() => import("./user/pages/Auth"));
 
 function App() {
   const token = useSelector((state) => state.auth.token);
@@ -24,7 +26,10 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (token && expirationDate.getTime() - new Date().getTime < new Date().getTime()) {
+    if (
+      token &&
+      expirationDate.getTime() - new Date().getTime < new Date().getTime()
+    ) {
       const remainingTime = expirationDate.getTime() - new Date().getTime();
       logoutTimer = setTimeout(dispatch(authActions.logout(), remainingTime));
     } else {
@@ -93,7 +98,17 @@ function App() {
   return (
     <Router>
       <MainNavigation />
-      <main>{routes}</main>
+      <main>
+        <Suspense
+          fallback={
+            <div className="center">
+              <LoadingSpinner />
+            </div>
+          }
+        >
+          {routes}
+        </Suspense>
+      </main>
     </Router>
   );
 }

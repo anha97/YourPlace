@@ -40,11 +40,8 @@ const UpdatePlace = () => {
   useEffect(() => {
     const fetchPlace = async () => {
       try {
-        // const data = await sendRequest(
-        //   `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`
-        // );
         const data = await sendRequest(
-          `http://localhost:5000/api/places/${placeId}`
+          `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`
         );
         setLoadedPlace(data.place);
         setFormData(
@@ -66,25 +63,11 @@ const UpdatePlace = () => {
     fetchPlace();
   }, [sendRequest, placeId, setFormData]);
 
-  // Why not just initial with given values? If you were to use fetch() or something, useForm will not work... So it's better to initial with default and then use setFormData
-
   const placeUpdateSubmitHandler = async (event) => {
     event.preventDefault();
     try {
-      // await sendRequest(
-      //   `${process.env.REACT_APP_BACKEND_UR}/places/${placeId}`,
-      //   "PATCH",
-      //   JSON.stringify({
-      //     title: formState.inputs.title.value,
-      //     description: formState.inputs.description.value,
-      //   }),
-      //   {
-      //     "Content-Type": "application/json",
-      //     Authorization: "Bearer " + token,
-      //   }
-      // );
       await sendRequest(
-        `http://localhost:5000/api/places/${placeId}`,
+        `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`,
         "PATCH",
         JSON.stringify({
           title: formState.inputs.title.value,
