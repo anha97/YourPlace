@@ -17,6 +17,9 @@ const UserPlaces = (props) => {
   useEffect(() => {
     const fetchPlacesByUid = async () => {
       try {
+        // const data = await sendRequest(
+        //   `${process.env.REACT_APP_BACKEND_URL}/places/user/${userId}`
+        // );
         const data = await sendRequest(
           `http://localhost:5000/api/places/user/${userId}`
         );

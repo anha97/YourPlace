@@ -40,6 +40,9 @@ const UpdatePlace = () => {
   useEffect(() => {
     const fetchPlace = async () => {
       try {
+        // const data = await sendRequest(
+        //   `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`
+        // );
         const data = await sendRequest(
           `http://localhost:5000/api/places/${placeId}`
         );
@@ -68,6 +71,18 @@ const UpdatePlace = () => {
   const placeUpdateSubmitHandler = async (event) => {
     event.preventDefault();
     try {
+      // await sendRequest(
+      //   `${process.env.REACT_APP_BACKEND_UR}/places/${placeId}`,
+      //   "PATCH",
+      //   JSON.stringify({
+      //     title: formState.inputs.title.value,
+      //     description: formState.inputs.description.value,
+      //   }),
+      //   {
+      //     "Content-Type": "application/json",
+      //     Authorization: "Bearer " + token,
+      //   }
+      // );
       await sendRequest(
         `http://localhost:5000/api/places/${placeId}`,
         "PATCH",

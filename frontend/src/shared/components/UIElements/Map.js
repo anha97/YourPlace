@@ -8,7 +8,7 @@ const Map = (props) => {
   const map = useRef(null);
 
   if (process.env.NODE_ENV !== 'production'){
-    const token = `pk.eyJ1IjoiYW5oYTk3IiwiYSI6ImNrc2dnNWtmbTFqcGIyd3JvdHFzcWJwODMifQ.izEXvRJBQMNJRo612IblEw`;
+    const token = "pk.eyJ1IjoiYW5oYTk3IiwiYSI6ImNrc2dnNWtmbTFqcGIyd3JvdHFzcWJwODMifQ.izEXvRJBQMNJRo612IblEw";
     // console.log(process.env.REACT_APP_API_KEY);
     // const token = process.env.REACT_APP_API_KEY;
     mapboxgl.accessToken = token;

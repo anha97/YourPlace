@@ -90,7 +90,7 @@ const Auth = () => {
       // Look at sendRequest inside http-hook.js
       try {
         const data = await sendRequest(
-          "http://localhost:5000/api/users/login",
+          `${process.env.REACT_APP_BACKEND_URL}/users/login`,
           "POST",
           JSON.stringify({
             email: formState.inputs.email.value,
@@ -100,6 +100,17 @@ const Auth = () => {
             "Content-Type": "application/json",
           }
         );
+        // const data = await sendRequest(
+        //   "http://localhost:5000/api/users/login",
+        //   "POST",
+        //   JSON.stringify({
+        //     email: formState.inputs.email.value,
+        //     password: formState.inputs.password.value,
+        //   }),
+        //   {
+        //     "Content-Type": "application/json",
+        //   }
+        // );
         dispatch(authActions.login({ id: data.userId, token: data.token })); // It will return true
       } catch (err) {}
     } else {
@@ -111,10 +122,15 @@ const Auth = () => {
         formData.append("image", formState.inputs.image.value);
         // Look at user-routes.js inside the backend folder
         const data = await sendRequest(
-          "http://localhost:5000/api/users/signup",
+          `${process.env.REACT_APP_BACKEND_URL}/users/signup`,
           "POST",
           formData  // No need to add headers since formData will add that automatically
         );
+        // const data = await sendRequest(
+        //   "http://localhost:5000/api/users/signup",
+        //   "POST",
+        //   formData  // No need to add headers since formData will add that automatically
+        // );
         dispatch(authActions.login({ id: data.userId, token: data.token})); // It will return true
       } catch (err) {}
     }
